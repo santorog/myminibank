@@ -1,12 +1,12 @@
 package org.example.myminibank.service;
 
 import org.example.myminibank.dto.AccountApiResponse;
+import org.example.myminibank.events.NotificationEvent;
+import org.example.myminibank.events.TransactionEvent;
 import org.example.myminibank.model.Account;
 import org.example.myminibank.model.Transaction;
-import org.example.myminibank.model.TransactionEvent;
 import org.example.myminibank.model.TransactionType;
 import org.example.myminibank.repository.AccountRepository;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +16,15 @@ import java.util.Objects;
 public class AccountService {
 
     private final AccountRepository accountRepository;
-    private final KafkaTemplate<String, TransactionEvent> kafkaTemplate;
 
-    public AccountService(AccountRepository accountRepository, KafkaTemplate<String, TransactionEvent> kafkaTemplate) {
+    private final KafkaPublisherService kafkaPublisherService;
+
+    public AccountService(
+            AccountRepository accountRepository,
+            KafkaPublisherService kafkaPublisherService) {
+
         this.accountRepository = accountRepository;
-        this.kafkaTemplate = kafkaTemplate;
+        this.kafkaPublisherService = kafkaPublisherService;
     }
 
     // Create a new account
@@ -56,7 +60,7 @@ public class AccountService {
         accountRepository.save(account);
 
         Transaction transaction = new Transaction(TransactionType.DEPOSIT, id, amount);
-        kafkaTemplate.send("transaction-events", new TransactionEvent(transaction));
+        kafkaPublisherService.sendTransaction(new TransactionEvent(transaction));
 
         return AccountApiResponse.of("Successfully deposited {} to account {}", amount, id);
     }
@@ -75,7 +79,7 @@ public class AccountService {
         accountRepository.save(account);
 
         Transaction transaction = new Transaction(TransactionType.WITHDRAWAL, id, amount);
-        kafkaTemplate.send("transaction-events", new TransactionEvent(transaction));
+        kafkaPublisherService.sendTransaction(new TransactionEvent(transaction));
 
         return AccountApiResponse.of("Successfully withdrew {} from account {}", amount, id);
     }
@@ -108,8 +112,11 @@ public class AccountService {
         Transaction receiverTransaction =
                 new Transaction(TransactionType.TRANSFER, fromId, toId, toId, amount, reference);
 
-        kafkaTemplate.send("transaction-events", new TransactionEvent(senderTransaction));
-        kafkaTemplate.send("transaction-events", new TransactionEvent(receiverTransaction));
+        kafkaPublisherService.sendTransaction(new TransactionEvent(senderTransaction));
+        kafkaPublisherService.sendTransaction(new TransactionEvent(receiverTransaction));
+
+        NotificationEvent.transferNotificationEvents(fromAccount, toAccount, amount)
+                .forEach(kafkaPublisherService::sendNotification);
 
         return AccountApiResponse.of("Successfully transferred {} from Account {} to Account {}", amount, fromId, toId);
     }

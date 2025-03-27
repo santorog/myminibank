@@ -1,7 +1,7 @@
 package org.example.myminibank.service;
 
 import org.example.myminibank.model.Transaction;
-import org.example.myminibank.model.TransactionEvent;
+import org.example.myminibank.events.TransactionEvent;
 import org.example.myminibank.repository.TransactionRepository;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.retry.annotation.Retryable;
@@ -19,7 +19,7 @@ public class TransactionStorageService {
         this.transactionRepository = transactionRepository;
     }
 
-    @KafkaListener(topics = "transaction-events", groupId = "transaction-storing-group")
+    @KafkaListener(topics = "transactions", groupId = "transactions-group")
     @Retryable(maxAttempts = 3)  // ✅ Retries failed transactions up to 3 times
     @Transactional
     public void consumeTransactionEvent(TransactionEvent event) {
