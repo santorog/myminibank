@@ -21,31 +21,21 @@ Un projet Spring Boot minimaliste de gestion de comptes et transactions bancaire
 ```mermaid
 graph TD
     subgraph Web Layer
-        A1[AccountController] --> S1[AccountService]
-        A1 --> S1
-        T1[TransactionController] --> S2[TransactionService]
+        A1[AccountController]
+        T1[TransactionController]
     end
 
     subgraph Service Layer
-        S1 --> R1[AccountRepository]
-        S2 --> R2[TransactionRepository]
-        S2 --> K1[KafkaPublisherService]
-        S2 --> N1[NotificationService]
-        S2 --> ST1[TransactionStorageService]
+        S1[AccountService]
+        S2[TransactionService]
+        K1[KafkaPublisherService]
+        N1[NotificationService]
+        ST1[TransactionStorageService]
     end
 
     subgraph Repository Layer
-        R1
-        R2
-    end
-
-    subgraph Events
-        K1
-        N1
-    end
-
-    subgraph Utils
-        ST1
+        R1[AccountRepository]
+        R2[TransactionRepository]
     end
 
     subgraph Configuration
@@ -55,6 +45,16 @@ graph TD
     subgraph Exception Handling
         EH[GlobalExceptionHandler]
     end
+
+    %% Relations
+    A1 --> S1
+    A1 --> S1
+    T1 --> S2
+    S1 --> R1
+    S2 --> R2
+    S2 --> K1
+    S2 --> N1
+    S2 --> ST1
 ```
 
 ### Endpoints principaux
