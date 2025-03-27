@@ -48,7 +48,6 @@ graph TD
 
     %% Relations
     A1 --> S1
-    A1 --> S1
     T1 --> S2
     S1 --> R1
     S2 --> R2
