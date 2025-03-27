@@ -1,4 +1,6 @@
-package org.example.myminibank.model;
+package org.example.myminibank.events;
+
+import org.example.myminibank.model.Transaction;
 
 public class TransactionEvent {
 
