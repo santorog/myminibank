@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.example</groupId>
-    <artifactId>MyMiniBank</artifactId>
+    <artifactId>myminibank</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>MyMiniBank</name>
-    <description>MyMiniBank</description>
+    <description>A mini bank to use Spring Kafka and Docker</description>
     <url/>
     <licenses>
         <license/>

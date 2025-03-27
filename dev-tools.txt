@@ -1,0 +1,17 @@
+# Lancer Mailhog
+docker run -d -p 8025:8025 -p 1025:1025 mailhog/mailhog
+
+# PostgreSQL - Connexion au shell psql
+docker exec -it myminibank_db_1 psql -U user -d mydb
+
+# Kafka - Lister les topics
+docker exec -it myminibank_kafka_1 kafka-topics.sh --bootstrap-server kafka:9093 --list
+
+# Kafka - Détails d'un topic (ex: test-topic)
+docker exec -it myminibank_kafka_1 kafka-topics.sh --bootstrap-server kafka:9093 --describe --topic test-topic
+
+# Kafka - Lire les messages d'un topic (ex: test-topic)
+docker exec -it myminibank_kafka_1 kafka-console-consumer.sh --bootstrap-server kafka:9093 --topic test-topic --from-beginning
+
+# Kafka - Envoyer un message dans un topic (ex: test-topic)
+docker exec -it myminibank_kafka_1 kafka-console-producer.sh --broker-list kafka:9093 --topic test-topic
