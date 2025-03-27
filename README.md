@@ -53,8 +53,8 @@ graph TD
     S1 --> R1
     S2 --> R2
     S2 --> K1
-    S2 --> N1
-    S2 --> ST1
+    K1 --> N1
+    K1 --> ST1
 ```
 
 ### Endpoints principaux
